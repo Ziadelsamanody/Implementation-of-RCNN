@@ -42,9 +42,6 @@ ds = OpenImages(df=DF_RAW)
 # show(img , bbs=bbx, texts=clss, sz=10)
 
 
-
-
-
 FPATHS, GTBBS,CLSS, DELTAS, ROIS, IOUS =[], [], [], [], [], []
 
 N = 500
@@ -100,3 +97,37 @@ background_class = label2target['background']
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229,0.224, 0.225])
 
+class RCNNDataset(Dataset):
+    def __init__(self, fpaths, rois, labels, deltas, gtbbs):
+        self.fpaths = fpaths
+        self.rois = rois
+        self.labels = labels
+        self.deltas = deltas
+        self.gtbbs= gtbbs
+    def __len__(self):
+        return len(self.fpaths)
+    def __getitem__(self, index):
+        fpath = str(self.fpaths[index])
+        image = cv.imread(fpath, 1)[..., ::-1]
+        H,W , _ = image.shape
+        sh = np.array([W,H,W,H])
+        gtbbs = self.gtbbs[index]
+        rois = self.rois[index]
+        bbs = (np.array(rois) * sh).astype(np.uint16)
+        labels = self.labels[index]
+        deltas = self.deltas[index]
+        crops = [image[y:Y, x:X] for (x,y,X,Y) in bbs]
+        return image, crops, bbs, labels, deltas, gtbbs, fpath
+    def collate_fn(self, batch):
+        input, rois, rixs, labels, deltas =[], [], [], [], []
+        for ix in range(len(batch)):
+            image, crops,image_bbs, image_labels, image_deltas, image_gt_bbs, image_fpath = batch[ix]
+            crops = [cv.resize(crop, (224, 224)) for crop in crops]
+            crops = [preprocess_image(crop/255.0, normalize=normalize) for crop in crops]
+            input.extend(crops)
+            labels.extend(label2target[c] for c in image_labels)
+            deltas.extend(image_deltas)
+        input = torch.cat(input).to(device)
+        labels = torch.Tensor(labels).long().to(device)
+        deltas = torch.Tensor(deltas).float().to(device)
+        return input, labels, deltas
