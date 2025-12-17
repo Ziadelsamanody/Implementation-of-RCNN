@@ -87,7 +87,7 @@ for idx , (img, bbs, labels, fpath) in enumerate(ds):
     candidates = np.array([(x,y,x+w,y+h) for x,y,w,h in candidates])
     ious, rois, clss, deltas = [],[],[],[]
     # store iou of all canidantes  with respect to all ground truth for image where bbs is the gt of bbox of diffrent object 
-    ious = np.array([extract_iou(candidates, __bb__) for candidate in candidates] for __bb__ in bbs).T
+    ious = np.array([[extract_iou(candidate, __bb__) for candidate in candidates] for __bb__ in bbs]).T
     # loop through candidates and store x1 y1 x2 y2 max, min
     for ix, candidate in enumerate(candidates):
         cx,cy, cX,cY = candidate
@@ -102,8 +102,9 @@ for idx , (img, bbs, labels, fpath) in enumerate(ds):
             clss.append('background')
         # fetch offset delta transform the current proposal into the canidate that refio prposal 
         # gt - best bb 
-        delta = np.array([_x-cx, _y-cx, _X-cX, _Y-cY]) / np.array([W,H,W,H])
+        delta = np.array([_x-cx, _y-cy, _X-cX, _Y-cY]) / np.array([W,H,W,H])
         deltas.append(delta)
+        rois.append(candidate / np.array([W,H,W,H]))
         # Append paths iou , roi, clss, delta , gt
         FPATHS.append(fpath)
         IOUS.append(ious)
@@ -112,4 +113,14 @@ for idx , (img, bbs, labels, fpath) in enumerate(ds):
         DELTAS.append(deltas)
         GTBBS.append(bbs)
 
+# Fetch image path names and store all information obtained in a list of listis
 FPATHS = [f"{IMAGE_ROOT}/{stem(f)}.jpg" for f in FPATHS]
+
+FPATHS, GTBBS, CLSS, DELTAS , ROIS  = [item for item in [FPATHS, GTBBS, CLSS, DELTAS, ROIS]]
+
+# convert classes to numric by there inices 0 background 1 bus 2 truck
+targets = pd.DataFrame(flatten(CLSS), columns=['label'])
+label2target = {l:t for t, l in enumerate(targets['label'].unique())}
+target2label = {t:l for l,t in label2target.items()}
+background_class = label2target['background']
+print(background_class)
