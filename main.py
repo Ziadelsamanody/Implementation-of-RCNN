@@ -14,7 +14,7 @@ test_loader  = DataLoader(test_ds, batch_size=2 ,collate_fn=test_ds.collate_fn, 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-rcnn = RCNN().to(device)
+rcnn = RCNN(num_classes=len(label2target)).to(device)
 criterion = rcnn.calc_loss
 optimizer = optim.SGD(rcnn.parameters(), lr=1e-3)
 

@@ -127,7 +127,7 @@ class RCNNDataset(Dataset):
             input.extend(crops)
             labels.extend(label2target[c] for c in image_labels)
             deltas.extend(image_deltas)
-        input = torch.cat(input).to(device)
+        input = torch.stack(input).to(device)
         labels = torch.Tensor(labels).long().to(device)
         deltas = torch.Tensor(deltas).float().to(device)
         return input, labels, deltas

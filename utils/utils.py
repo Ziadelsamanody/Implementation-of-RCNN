@@ -36,10 +36,10 @@ def extract_iou(boxA, boxB, epsilon=1e-5):
     iou = area_overlap / (area_combined + epsilon)
     return iou
 
-def preprocess_image(img, normlize=None):
+def preprocess_image(img, normalize=None):
     img = torch.tensor(img).permute(2,0,1) 
-    if normlize : 
-        img = normlize(img)
+    if normalize : 
+        img = normalize(img)
     return img.to(device=device).float()
 
 def decode(_y):
