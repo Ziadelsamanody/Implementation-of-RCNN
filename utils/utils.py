@@ -6,6 +6,8 @@ import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def extract_candidates(img):
+    # Convert to uint8 to avoid local_binary_pattern warning
+    img = img.astype(np.uint8)
     img_lbl, regions = selectivesearch.selective_search(img, scale=200, min_size=100)
     img_area = np.prod(img.shape[:2])
     candidates = []
