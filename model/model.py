@@ -34,4 +34,20 @@ class RCNN(nn.Module):
         cls_scores = self.cls_score(features)
         bbox_reg = self.bbox(features)
         return cls_scores, bbox_reg
+    
+    def calc_loss(self, probs, _deltas, labels, deltas):
+        detection_loss = self.cel(probs, labels)
+        # calcute loss for detection classes exclude the background 
+        idx, = torch.where(labels !=0)
+        _deltas = _deltas[idx]
+        deltas = deltas[idx]
+        self.lmb = 10.0
+        if len(idx) > 0 :
+            regression_loss = self.sl1(_deltas, deltas)
+            return detection_loss + self.lmb *\
+            regression_loss , detection_loss.detach(), regression_loss.detach()
+        else : 
+            regression_loss = 0
+            return detection_loss + self.lmb * regression_loss, \
+            detection_loss.detach(), regression_loss.detach()
         
