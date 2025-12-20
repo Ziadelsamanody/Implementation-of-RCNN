@@ -128,6 +128,6 @@ class RCNNDataset(Dataset):
             labels.extend(label2target[c] for c in image_labels)
             deltas.extend(image_deltas)
         input = torch.stack(input).to(device)
-        labels = torch.Tensor(labels).long().to(device)
-        deltas = torch.Tensor(deltas).float().to(device)
+        labels = torch.tensor(labels, dtype=torch.long, device=device)
+        deltas = torch.tensor(np.array(deltas), dtype=torch.float32, device=device)
         return input, labels, deltas
