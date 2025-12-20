@@ -40,3 +40,10 @@ for epoch in range(epochs):
         )
 # plot training and validation metrics 
 log.plot_epochs('trn_loss, val_loss'.split(','))
+
+print("Saving model...")
+torch.save({
+    "model_state": rcnn.state_dict(),
+    "label2target": label2target,
+    "epochs_trained": epochs,
+}, "rcnn_model.pth")
