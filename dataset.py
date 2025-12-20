@@ -44,7 +44,7 @@ ds = OpenImages(df=DF_RAW)
 
 FPATHS, GTBBS,CLSS, DELTAS, ROIS, IOUS =[], [], [], [], [], []
 
-N = 500
+N = 100  # Reduced from 500 for faster training
 
 for idx , (img, bbs, labels, fpath) in enumerate(ds):
     if idx == N :
