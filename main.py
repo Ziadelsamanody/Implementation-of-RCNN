@@ -9,8 +9,8 @@ train_ds = RCNNDataset(FPATHS[:n_train], ROIS[:n_train], CLSS[:n_train], DELTAS[
 test_ds = RCNNDataset(FPATHS[n_train:], ROIS[n_train:], CLSS[n_train:], DELTAS[n_train:], GTBBS[n_train:])
 
 # data loaders 
-train_loader = DataLoader(train_ds, batch_size=2, collate_fn=train_ds.collate_fn, drop_last=True, num_workers=2, pin_memory=True)
-test_loader  = DataLoader(test_ds, batch_size=2 ,collate_fn=test_ds.collate_fn, drop_last=True, num_workers=2, pin_memory=True)
+train_loader = DataLoader(train_ds, batch_size=2, collate_fn=train_ds.collate_fn, drop_last=True, num_workers=0)
+test_loader  = DataLoader(test_ds, batch_size=2 ,collate_fn=test_ds.collate_fn, drop_last=True, num_workers=0)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
