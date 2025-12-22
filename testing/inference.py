@@ -56,4 +56,9 @@ def test_predications(filename, show_output=True):
                 plt.show()
                 return 
          
-         ax[1].set_title()   
+        ax[1].set_title(target2label[clss[best_pred]])
+        show(img, bbs=bbs.tolist(), texts=[target2label[c] for c in clss.tolist()],
+             ax = ax[1], title='predicted boundig box and class')
+        plt.show()
+        return (x,y,X,Y), target2label[clss[best_pred]], best_conf 
+    
