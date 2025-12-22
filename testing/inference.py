@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('../')
 from utils import * 
-from main import rcnn
+from main import rcnn, test_ds
 from dataset import * 
 
 def test_predications(filename, show_output=True):
@@ -62,3 +62,6 @@ def test_predications(filename, show_output=True):
         plt.show()
         return (x,y,X,Y), target2label[clss[best_pred]], best_conf 
     
+if __name__ == '__main__':
+     image, crops, labels, deltas, gttbs, fpath = test_ds[7]
+     test_predications(fpath)
