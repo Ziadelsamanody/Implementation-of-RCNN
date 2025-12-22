@@ -39,7 +39,7 @@ for epoch in range(epochs):
             val_acc = accs.mean(), end='\r'
         )
 # plot training and validation metrics 
-log.plot_epochs('trn_loss, val_loss'.split(','))
+log.plot_epochs(['trn_loss', 'val_loss'])
 
 print("Saving model...")
 torch.save({
